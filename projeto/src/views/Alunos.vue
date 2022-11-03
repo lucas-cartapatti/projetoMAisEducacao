@@ -5,8 +5,6 @@
         </div>
         <div class="alunos-tab">
             <div>
-                <input id="search-field" type="text" placeholder="Digite sua busca">
-                <input type="submit" value="Pesquisar" class="btn btn-search" disabled>
                 <router-link to="/cadastrar"><button class="btn btn-register">Cadastrar Aluno</button></router-link>
             </div>
         </div>
@@ -23,11 +21,15 @@
     name: 'Alunos',
     data() {
       return {
-        
+        cpf: ''
       }
+    },
+    methods:{
     },
     components:{
         DatatableVue
+    },
+    mounted(){
     }
   }
 </script>
@@ -35,8 +37,6 @@
 <style scoped>
 .main-container{
     border: solid 2px #222;
-    float: left;
-    width: 79%;
 }
     .main-container, #tab-title{
         border-top-left-radius: 8px;
@@ -59,22 +59,17 @@
 .alunos-tab{
     padding: 1rem;
     align-items: center;
-    border-bottom: solid 2px;
     margin: 0 auto;
 }
-    .alunos-tab #search-field{
-        width: 350px;
-        padding: 10px;
-        border: solid 2px #ccc;
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px;
+    .alunos-tab div{
+        margin-left: 87%;
     }
-    .alunos-tab input, .btn-search, .btn-register{
+    .alunos-tab input, .btn-register{
         font-size: 16px;
         margin-bottom: 30px;
     }
     .alunos-tab .btn-register{
-        margin-left: 10px;
+        position: relative;
     }
     
 
@@ -88,29 +83,32 @@
 .btn-search{
     background-color: rgb(0, 119, 255);
     border: solid 2px rgb(0, 108, 231);
-    color:white
+    color:white;
+    cursor: pointer;
 }
     .btn-search:hover{
         background-color: white;
         color: black;
         transition: .5s;
+        cursor: pointer;
     }
     .btn-search:disabled{
         color: white;
         background-color: #999;
         border: solid 2px #999;
-        cursor:not-allowed;
     }
 
 .btn-register{
     background-color: rgb(255, 196, 0);
     color: black;
     border: 2px solid rgb(247, 189, 0);
+    cursor: pointer;
 }
     .btn-register:hover{
             background-color: white;
             color: black;
             transition: .5s;
+            cursor: pointer;
         }
 </style>
 

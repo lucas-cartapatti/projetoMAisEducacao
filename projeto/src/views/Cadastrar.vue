@@ -12,9 +12,9 @@
                 <label for="email">E-mail</label>
                 <input name="email" v-model="email" type="text" placeholder="ex: joao.silva@email.com">
             </div>
-            <div>
+            <div v-if="!isEditing">
                 <label for="ra">RA</label>
-                <input name="ra" type="text" placeholder="ex: 1234567" v-model="ra" v-mask="'0000000'">
+                <input  name="ra" type="text" placeholder="ex: 1234567" v-model="ra" v-mask="'0000000'">
             </div>
             <div>
                 <label for="cpf">CPF</label>
@@ -24,7 +24,7 @@
             <div id="btn-div">
                 <div>
                     <router-link to="/alunos"><button class="btn btn-cancel">Cancelar</button></router-link>
-                    <button :id="id" class="btn btn-save" type="submit" >Salvar</button>
+                    <button :id="ra" class="btn btn-save" type="submit" >Salvar</button>
                 </div>
             </div>
         </div>
@@ -32,38 +32,92 @@
 </template>
 
 <script>
+import { tSExpressionWithTypeArguments } from '@babel/types';
 
     export default{
         name: 'Cadastrar',
-            data() {
+        data() {
             return {
-                id: null,
-                nome:null,
-                email:null,
-                cpf:'',
-                ra:null
+                id: this.$route.params.id,
+                isEditing: false,
+
+                nome: null,
+                email: null,
+                cpf: null,
+                ra: null
             }
         },
         methods: {
             async SalvarCadastro(e){
                 e.preventDefault();
-                
+
                 const data = {
-                    id: this.id,
-                    nome: this.nome,
-                    email: this.email,
-                    cpf: this.cpf,
-                    ra: this.ra
+                        Ra : this.ra,
+                        Nome : this.nome,
+                        Email : this.email,
+                        Cpf : this.cpf
+                    };
+                const dataJson = JSON.stringify(data);
+
+                if(this.id != undefined){
+                    const req = await fetch('https://localhost:62388/api/Alunos/atualizar', {
+                        method:'PUT',
+                        headers:{'Content-Type': 'application/json'},
+                        body: dataJson
+                    });
+                    const res = await req.json();
+                    
+                    if(res.status === 200){
+                        alert('Registro atualizado com sucesso');
+                    }else{
+                        alert('Não foi possível atualizar o cadastro: ' + res.message)
+                    }                    
+                }else{
+    
+                    const req = await fetch('https://localhost:62388/api/Alunos/cadastrar', {
+                        method:'POST',
+                        headers:{'Content-Type': 'application/json'},
+                        body: dataJson
+                    });
+                    const res = await req.json();
+                    
+                    if(res.status === 200){
+                        alert('Registro enviado ao servidor com sucesso');
+                    }else{
+                        alert('Não foi possível realizar o cadastro: ' + res.message)
+                    }
+                    this.id = null;
+                    this.nome = null;
+                    this.email = null;
+                    this.cpf = null;
+                    this.ra = null;
                 }
-                console.log(data);
 
-                alert('Registro enviado ao servidor com sucesso');
+            },
 
-                this.id = null;
-                this.nome = null;
-                this.email = null;
-                this.cpf = null;
-                this.ra = null;
+            async CarregarCadastro(id){
+                const req = await fetch(`https://localhost:62388/api/Alunos/Id/${id}`);
+                const data = await req.json();
+
+                const aluno = data;
+                if(aluno.length > 0){
+                    this.nome = aluno[0].Nome;
+                    this.cpf = aluno[0].Cpf;
+                    this.ra = aluno[0].Ra;
+                    this.email = aluno[0].Email;
+
+                    this.isEditing = true;
+                }
+                
+            }
+
+        },
+        mounted() {
+            if(this.id != undefined){
+                const n_id = parseInt(this.id);
+
+                this.CarregarCadastro(n_id);
+                //CarregarAluno(this.id);
             }
         }
     }
